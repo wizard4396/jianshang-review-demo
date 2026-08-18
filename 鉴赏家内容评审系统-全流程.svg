@@ -1,0 +1,137 @@
+<svg viewBox="0 0 680 1162" width="1360" xmlns="http://www.w3.org/2000/svg" role="img" font-family="'Segoe UI','Microsoft YaHei',sans-serif">
+<title>鉴赏家内容评审系统全流程</title>
+<desc>鉴赏内容接收、下发（出池判定）、评委接单、三人打分、后台查看流程，浅色飞书风格</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="680" height="1162" fill="#FFFFFF"/>
+<text x="40" y="40" font-size="18" font-weight="500" fill="#1F2329">鉴赏家内容评审系统 · 全流程</text>
+<text x="40" y="62" font-size="12" fill="#8F959E">鉴赏内容接收 → 下发 → 评委接单 → 3 人打分 → 后台查看</text>
+
+<rect x="30" y="84" width="620" height="118" rx="12" fill="#F7F8FA" stroke="#E5E6EB" stroke-width="1"/>
+<rect x="46" y="101" width="10" height="10" rx="2" fill="#3370FF"/>
+<text x="64" y="111" font-size="12.5" font-weight="500" fill="#1F2329">第 1 步 · 内容接收</text>
+<g>
+<rect x="60" y="124" width="140" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="64" y="128" width="4" height="48" rx="2" fill="#3370FF"/>
+<text x="130" y="145" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">客户端</text>
+<text x="130" y="163" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">玩家发来的鉴赏内容</text>
+</g>
+<line x1="202" y1="152" x2="236" y2="152" stroke="#C9CDD4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="219" y="142" font-size="11" fill="#8F959E" text-anchor="middle">接收</text>
+<g>
+<rect x="240" y="124" width="180" height="56" rx="8" fill="#FFFFFF" stroke="#3370FF" stroke-width="1" stroke-dasharray="5 3"/>
+<rect x="244" y="128" width="4" height="48" rx="2" fill="#3370FF"/>
+<text x="330" y="145" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">鉴赏准备池</text>
+<text x="330" y="163" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">暂存等待 · 满足条件再下发</text>
+</g>
+<text x="440" y="132" font-size="11" fill="#646A73">· 每个内容带「玩法」标签</text>
+<text x="440" y="150" font-size="11" fill="#646A73">· 玩法如跑酷、单挑…</text>
+<text x="440" y="168" font-size="11" fill="#646A73">· 没到条件就安心排队</text>
+
+<rect x="30" y="214" width="620" height="266" rx="12" fill="#F7F8FA" stroke="#E5E6EB" stroke-width="1"/>
+<rect x="46" y="231" width="10" height="10" rx="2" fill="#FF7D00"/>
+<text x="64" y="241" font-size="12.5" font-weight="500" fill="#1F2329">第 2 步 · 下发内容池（出池判定）</text>
+<g>
+<rect x="60" y="254" width="310" height="92" rx="8" fill="#FFF7E8" stroke="#FF7D00" stroke-width="1"/>
+<text x="76" y="272" font-size="13" font-weight="500" fill="#854F0B">出池判定</text>
+<text x="76" y="292" font-size="12" fill="#646A73">✦ 进池满一定时间（暂定 48 小时）</text>
+<text x="76" y="310" font-size="12" fill="#646A73">✦ 同玩法攒够一定数量（暂定 5 条）</text>
+<text x="76" y="330" font-size="11" fill="#8F959E">满足其一即自动下发 · 数值可修改配置</text>
+</g>
+<path d="M370,330 H500 V264 H374" fill="none" stroke="#C9CDD4" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+<text x="380" y="348" font-size="11" fill="#8F959E">都未满足 → 继续在准备池等待</text>
+<line x1="220" y1="346" x2="220" y2="378" stroke="#00B42A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="228" y="364" font-size="11" fill="#00B42A">任一满足 · 自动下发</text>
+<g>
+<rect x="60" y="382" width="160" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="64" y="386" width="4" height="48" rx="2" fill="#3370FF"/>
+<text x="140" y="399" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">鉴赏内容池</text>
+<text x="140" y="417" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">任务排队等评审</text>
+</g>
+<text x="60" y="452" font-size="11" fill="#646A73">· 后续内容直发：同玩法第一批任务下发后，后续新增内容直接下发，并优先派给已领取过该玩法的评委</text>
+
+<rect x="30" y="492" width="620" height="142" rx="12" fill="#F7F8FA" stroke="#E5E6EB" stroke-width="1"/>
+<rect x="46" y="509" width="10" height="10" rx="2" fill="#00B42A"/>
+<text x="64" y="519" font-size="12.5" font-weight="500" fill="#1F2329">第 3 步 · 评委接单</text>
+<g>
+<rect x="60" y="534" width="170" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="64" y="538" width="4" height="48" rx="2" fill="#00B42A"/>
+<text x="147" y="555" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">评委点「开始接单」</text>
+<text x="147" y="573" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">系统自动派 1 个任务</text>
+</g>
+<line x1="232" y1="562" x2="266" y2="562" stroke="#C9CDD4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g>
+<rect x="272" y="534" width="190" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="276" y="538" width="4" height="48" rx="2" fill="#00B42A"/>
+<text x="367" y="555" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">系统派单</text>
+<text x="367" y="573" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">优先派同玩法的任务</text>
+</g>
+<text x="478" y="542" font-size="11" fill="#646A73">· 一次只派 1 单，交一单再派一单</text>
+<text x="478" y="560" font-size="11" fill="#646A73">· 每天完成上限 20 条</text>
+
+<rect x="30" y="646" width="620" height="334" rx="12" fill="#F7F8FA" stroke="#E5E6EB" stroke-width="1"/>
+<rect x="46" y="663" width="10" height="10" rx="2" fill="#FF7D00"/>
+<text x="64" y="673" font-size="12.5" font-weight="500" fill="#1F2329">第 4 步 · 3 位评委打分</text>
+<text x="60" y="696" font-size="12" fill="#646A73">同一个内容，系统会找 3 位评委各评一次，互相看不到对方</text>
+<g>
+<rect x="55" y="712" width="190" height="84" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<text x="150" y="735" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">评委 1</text>
+<text x="150" y="753" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">通过 / 优质 / 不通过</text>
+<text x="150" y="771" font-size="11" fill="#8F959E" text-anchor="middle" dominant-baseline="central">独立打分 · 互不可见</text>
+</g>
+<g>
+<rect x="245" y="712" width="190" height="84" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<text x="340" y="735" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">评委 2</text>
+<text x="340" y="753" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">通过 / 优质 / 不通过</text>
+<text x="340" y="771" font-size="11" fill="#8F959E" text-anchor="middle" dominant-baseline="central">独立打分 · 互不可见</text>
+</g>
+<g>
+<rect x="435" y="712" width="190" height="84" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<text x="530" y="735" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">评委 3</text>
+<text x="530" y="753" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">通过 / 优质 / 不通过</text>
+<text x="530" y="771" font-size="11" fill="#8F959E" text-anchor="middle" dominant-baseline="central">独立打分 · 互不可见</text>
+</g>
+<g>
+<rect x="55" y="812" width="150" height="44" rx="8" fill="#E8FFEA" stroke="#00B42A" stroke-width="1"/>
+<text x="130" y="826" font-size="13" font-weight="500" fill="#00B42A" text-anchor="middle" dominant-baseline="central">通过</text>
+<text x="130" y="842" font-size="11" fill="#00B42A" text-anchor="middle" dominant-baseline="central">确认即完成</text>
+</g>
+<g>
+<rect x="215" y="812" width="150" height="44" rx="8" fill="#FFF7E8" stroke="#FF7D00" stroke-width="1"/>
+<text x="290" y="826" font-size="13" font-weight="500" fill="#FF7D00" text-anchor="middle" dominant-baseline="central">优质</text>
+<text x="290" y="842" font-size="11" fill="#FF7D00" text-anchor="middle" dominant-baseline="central">确认即完成</text>
+</g>
+<g>
+<rect x="375" y="812" width="220" height="44" rx="8" fill="#FFECE8" stroke="#F53F3F" stroke-width="1"/>
+<text x="485" y="826" font-size="13" font-weight="500" fill="#F53F3F" text-anchor="middle" dominant-baseline="central">不通过</text>
+<text x="485" y="842" font-size="11" fill="#F53F3F" text-anchor="middle" dominant-baseline="central">需要选一个原因</text>
+</g>
+<text x="60" y="876" font-size="11" fill="#646A73">不通过的原因（四选一）：① 黄赌毒 / 涉政 / 广告内容  ② 无意义水贴</text>
+<text x="60" y="896" font-size="11" fill="#646A73">③ 点评与地图毫无关联  ④ 内容抄袭</text>
+<text x="60" y="936" font-size="11" fill="#FF7D00">评不完会回池子：1 小时没提交 → 自动回池，换别的评委</text>
+<text x="60" y="954" font-size="11" fill="#FF7D00">（重派时优先派给评审过该玩法的老评委）</text>
+
+<rect x="30" y="992" width="620" height="118" rx="12" fill="#F7F8FA" stroke="#E5E6EB" stroke-width="1"/>
+<rect x="46" y="1009" width="10" height="10" rx="2" fill="#3370FF"/>
+<text x="64" y="1019" font-size="12.5" font-weight="500" fill="#1F2329">第 5 步 · 完成后</text>
+<g>
+<rect x="60" y="1032" width="170" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="64" y="1036" width="4" height="48" rx="2" fill="#00B42A"/>
+<text x="147" y="1053" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">3 票齐 = 评审完成</text>
+<text x="147" y="1071" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">不再给这个内容派单</text>
+</g>
+<line x1="232" y1="1060" x2="266" y2="1060" stroke="#C9CDD4" stroke-width="1.5" marker-end="url(#arrow)"/>
+<g>
+<rect x="272" y="1032" width="190" height="56" rx="8" fill="#FFFFFF" stroke="#DCDEE3" stroke-width="1"/>
+<rect x="276" y="1036" width="4" height="48" rx="2" fill="#3370FF"/>
+<text x="367" y="1053" font-size="13" font-weight="500" fill="#1F2329" text-anchor="middle" dominant-baseline="central">管理后台展示</text>
+<text x="367" y="1071" font-size="11.5" fill="#646A73" text-anchor="middle" dominant-baseline="central">看到每个内容的 3 份结论</text>
+</g>
+<text x="478" y="1040" font-size="11" fill="#646A73">· 不做自动判定，人来看</text>
+<text x="478" y="1058" font-size="11" fill="#646A73">· 暂不回传客户端</text>
+
+<text x="40" y="1140" font-size="11.5" fill="#8F959E">颜色说明：蓝 = 内容与后台 · 绿 = 评委与完成 · 橙 = 判定/优质/提示 · 红 = 不通过</text>
+</svg>
