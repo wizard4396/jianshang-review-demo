@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鉴赏家内容评审系统 · Demo</title>
+<style>
+  /* ===== 基础 ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #F2F3F5;
+    color: #1F2329;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+  .hidden { display: none !important; }
+
+  /* ===== 顶栏 ===== */
+  .header {
+    background: #FFFFFF; border-bottom: 1px solid #E5E6EB;
+    height: 68px; display: flex; align-items: center; padding: 0 40px; gap: 28px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 1px 2px rgba(0,0,0,.03);
+  }
+  .header::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+    background: linear-gradient(90deg, rgba(51,112,255,.35), rgba(110,158,255,.08) 40%, transparent);
+    pointer-events: none;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 500; color: #1F2329; white-space: nowrap; }
+  .logo-mark {
+    width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#3370FF,#6E9EFF);
+    display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 15px; font-weight: 500;
+  }
+  .logo .badge {
+    display: inline-block; font-size: 11px; font-weight: 400; color: #3370FF;
+    background: #EAF1FF; border-radius: 4px; padding: 1px 8px; margin-left: 2px; vertical-align: 2px;
+  }
+  .tabs { display: flex; gap: 6px; flex: 1; }
+  .tab-btn {
+    background: transparent; color: #646A73; font-size: 15px;
+    padding: 0 18px; height: 44px; line-height: 44px; border-radius: 10px; transition: all .2s;
+  }
+  .tab-btn:hover { background: #F2F3F5; color: #1F2329; }
+  .tab-btn.active { background: #EAF1FF; color: #3370FF; font-weight: 500; }
+  .user { display: flex; align-items: center; gap: 10px; font-size: 13px; white-space: nowrap; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg,#3370FF,#6E9EFF); color: #FFF;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500;
+  }
+
+  /* ===== 主体 ===== */
+  .main { max-width: 1480px; margin: 0 auto; padding: 32px 40px 64px; }
+  .batch-note {
+    background: #FFF7E8; border: 1px solid #FFE7BA; color: #854F0B;
+    font-size: 13px; border-radius: 10px; padding: 10px 18px; margin-bottom: 24px;
+  }
+
+  /* ===== 评委工作台：两栏布局 ===== */
+  .work-layout { display: flex; gap: 28px; align-items: flex-start; }
+  .work-main { flex: 1; min-width: 0; }
+
+  /* ===== 侧栏 ===== */
+  .work-side { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px; }
+  .side-card {
+    background: #FFF; border: 1px solid #E5E6EB; border-radius: 16px;
+    padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 4px 16px rgba(0,0,0,.03);
+  }
+  .side-title { font-size: 13px; color: #8F959E; margin-bottom: 14px; letter-spacing: .5px; }
+  .side-stat {
+    width: 100%; background: transparent; text-align: left; padding: 12px 0;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid #F2F3F5;
+  }
+  .side-stat:last-of-type { border-bottom: none; }
+  .ss-label { font-size: 14px; color: #646A73; }
+  .ss-value { font-size: 28px; font-weight: 500; line-height: 1.2; }
+  .ss-value .unit { font-size: 13px; color: #8F959E; font-weight: 400; margin-left: 2px; }
+  .ss-value .arrow { color: #C9CDD4; font-size: 18px; margin-left: 6px; }
+  .side-stat.clickable:hover .ss-value { color: #3370FF; }
+  .side-stat.clickable:hover .arrow { color: #3370FF; }
+  .side-status { display: flex; align-items: center; gap: 8px; padding-top: 14px; font-size: 14px; color: #646A73; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.blue { background: #3370FF; }
+  .dot.yellow { background: #FF7D00; }
+  .dot.green { background: #00B42A; }
+  .std-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: #646A73; padding: 11px 0; line-height: 1.5;
+    border-bottom: 1px solid #F2F3F5;
+  }
+  .std-item:last-child { border-bottom: none; }
+  .std-item b { color: #1F2329; font-weight: 500; }
+  .std-dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .side-link {
+    background: #FFF; border: 1px solid #E5E6EB; border-radius: 12px;
+    color: #646A73; font-size: 14px; padding: 15px 20px; text-align: left;
+    display: flex; align-items: center; justify-content: space-between; transition: all .2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,.03);
+  }
+  .side-link:hover { border-color: #3370FF; color: #3370FF; }
+  .side-link .arrow { color: #C9CDD4; font-size: 15px; }
+
+  /* ===== 工作台主区域 ===== */
+  .workbench {
+    background: #FFF; border: 1px solid #E5E6EB; border-radius: 20px;
+    min-height: 620px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.03), 0 8px 24px rgba(0,0,0,.04);
+    position: relative; overflow: hidden;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .task-card { animation: cardIn .28s ease; }
+  .wb-idle, .wb-done {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 48px;
+  }
+  .wb-idle::before {
+    content: ''; position: absolute; width: 340px; height: 340px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(51,112,255,.07), transparent 70%);
+    top: -120px; right: -80px; pointer-events: none;
+  }
+  .wb-idle::after {
+    content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,180,42,.05), transparent 70%);
+    bottom: -100px; left: -60px; pointer-events: none;
+  }
+  .idle-icon {
+    width: 96px; height: 96px; border-radius: 24px; margin-bottom: 24px;
+    background: #EAF1FF; display: flex; align-items: center; justify-content: center;
+  }
+  .idle-icon svg { width: 48px; height: 48px; }
+  .done-icon {
+    width: 96px; height: 96px; border-radius: 50%; margin-bottom: 24px;
+    background: #E8FFEA; display: flex; align-items: center; justify-content: center;
+    color: #00B42A; font-size: 44px; font-weight: 500;
+  }
+  .idle-title { font-size: 20px; font-weight: 500; color: #1F2329; }
+  .idle-sub { font-size: 14px; color: #8F959E; margin: 10px 0 32px; }
+  .btn-primary {
+    background: #3370FF; color: #FFF; font-size: 16px; font-weight: 500;
+    padding: 14px 52px; border-radius: 12px; transition: all .2s;
+    box-shadow: 0 4px 12px rgba(51,112,255,.28);
+  }
+  .btn-primary:hover { background: #2B5AC9; box-shadow: 0 6px 16px rgba(51,112,255,.34); transform: translateY(-1px); }
+
+  /* ===== 任务卡 ===== */
+  .task-card { padding: 36px 40px 40px; }
+  .task-cover-wrap { position: relative; border-radius: 14px; overflow: hidden; margin-bottom: 26px; }
+  .task-cover { display: block; width: 100%; height: 210px; object-fit: cover; object-position: center; }
+  .cover-mask {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 60%;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.55));
+    pointer-events: none;
+  }
+  .cover-title {
+    position: absolute; left: 22px; bottom: 16px; color: #FFF;
+    font-size: 22px; font-weight: 600; letter-spacing: .5px;
+    text-shadow: 0 1px 4px rgba(0,0,0,.35);
+  }
+  .task-tags { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .tag {
+    background: #EAF1FF; color: #3370FF; font-size: 15px; border-radius: 6px;
+    padding: 5px 14px; font-weight: 500;
+  }
+  .tag.tend-rec { background: #E8FFEA; color: #00B42A; }
+  .tag.tend-nrec { background: #FFECE8; color: #F53F3F; }
+  .task-meta {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #8F959E; margin-bottom: 20px;
+  }
+  .task-meta .meta-ic { width: 15px; height: 15px; flex-shrink: 0; opacity: .8; }
+  .meta-sep { margin: 0 6px; color: #D9DBDF; }
+  /* 评审倒计时（demo 5 分钟，真实环境 1 小时） */
+  .countdown { margin-left: auto; font-size: 13px; color: #FF7D00; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .countdown.warn { color: #F53F3F; animation: cdPulse 1s ease infinite; }
+  @keyframes cdPulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  /* 完成本单后停止接单 */
+  .stop-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; color: #646A73; cursor: pointer; }
+  .stop-row input { accent-color: #3370FF; width: 15px; height: 15px; cursor: pointer; }
+  /* 复制按钮 */
+  .copy-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; margin-left: 6px; vertical-align: -4px;
+    border-radius: 5px; background: #F2F3F5; color: #8F959E; transition: all .15s;
+  }
+  .copy-btn:hover { background: #EAF1FF; color: #3370FF; }
+  /* 内容来源标识（工坊/共创） */
+  .source-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: #646A73; white-space: nowrap; }
+  .source-badge .sb-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+  .sb-workshop .sb-dot { background: #3370FF; }
+  .sb-cocreate .sb-dot { background: #FF7D00; }
+  .cover-src { color: rgba(255,255,255,.92); }
+  .task-content {
+    background: #F7F8FA; border: 1px solid #F0F1F3; border-radius: 14px;
+    padding: 28px; font-size: 17px; color: #1F2329; line-height: 1.9;
+    min-height: 320px; max-height: 560px; overflow-y: auto; margin-bottom: 28px;
+  }
+  .task-content::-webkit-scrollbar { width: 7px; }
+  .task-content::-webkit-scrollbar-thumb { background: #D9DBDF; border-radius: 4px; }
+  .task-content::-webkit-scrollbar-track { background: transparent; }
+  .verdict-label { font-size: 14px; color: #8F959E; margin-bottom: 14px; }
+  .verdict-btns { display: flex; gap: 16px; }
+  .vbtn {
+    flex: 1; font-size: 16px; font-weight: 500; padding: 16px 0;
+    border-radius: 12px; border: 1px solid #E5E6EB; background: #FFF; color: #646A73;
+    transition: all .18s;
+  }
+  .vbtn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+  .vbtn:active { transform: translateY(0) scale(.97); }
+  .vbtn:disabled { opacity: .42; cursor: not-allowed; }
+  .vbtn:disabled:hover { transform: none; box-shadow: none; }
+  .btn-primary:active { transform: scale(.97); }
+  .vbtn.pass { color: #00B42A; }
+  .vbtn.pass:hover { border-color: #00B42A; background: #E8FFEA; }
+  .vbtn.good { color: #FF7D00; }
+  .vbtn.good:hover { border-color: #FF7D00; background: #FFF7E8; }
+  .vbtn.reject { color: #F53F3F; }
+  .vbtn.reject:hover { border-color: #F53F3F; background: #FFECE8; }
+
+  /* ===== 弹窗 ===== */
+  .mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,.42); z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal {
+    position: relative;
+    background: #FFF; border-radius: 16px; width: 460px; max-width: 92vw;
+    padding: 24px 28px; box-shadow: 0 12px 48px rgba(0,0,0,.16);
+  }
+  .modal-lg { width: 580px; }
+  .modal-lg-wide { width: 720px; }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #F2F3F5; color: #646A73; font-size: 17px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+  }
+  .modal-close:hover { background: #E5E6EB; color: #1F2329; }
+  .modal-title { font-size: 16px; font-weight: 500; margin-bottom: 16px; padding-right: 36px; }
+  /* 历史任务表格 */
+  .h-table-head {
+    display: flex; padding: 10px 14px; font-size: 12px; color: #8F959E;
+    background: #FAFBFC; border-bottom: 1px solid #F2F3F5; border-radius: 8px 8px 0 0;
+  }
+  .h-table-head span { flex: 1; }
+  .h-table-head span.h-play { flex: 1.7; }
+  .h-table-head span.h-id { flex: 0.8; }
+  .h-table-head span.h-time { flex: 1.1; }
+  .h-table-head span.h-op { flex: 0.8; }
+  .h-row {
+    display: flex; align-items: center; padding: 10px 14px; font-size: 13px;
+    border-bottom: 1px solid #F5F6F7; transition: background .15s;
+  }
+  .h-row:last-child { border-bottom: none; }
+  .h-row:nth-child(even) { background: #FAFBFC; }
+  .h-row:hover { background: #F0F5FF; }
+  .h-row > span { flex: 1; min-width: 0; }
+  .h-row .h-play-cell { flex: 1.7; display: flex; align-items: center; gap: 10px; }
+  .h-row .cell-id { flex: 0.8; }
+  .h-row .cell-time { flex: 1.1; }
+  .h-row .h-op-cell { flex: 0.8; }
+  .detail-head { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+  .detail-cover { width: 104px; height: 64px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+  .detail-title { font-size: 16px; font-weight: 500; color: #1F2329; }
+  .detail-title .play-id { font-size: 12px; color: #8F959E; font-weight: 400; margin-left: 8px; }
+  .detail-meta { font-size: 13px; color: #8F959E; margin-top: 6px; }
+  .detail-tags { display: flex; gap: 10px; margin-top: 8px; }
+  .detail-section { font-size: 13px; color: #8F959E; margin: 16px 0 8px; }
+  .detail-text {
+    background: #F7F8FA; border: 1px solid #F0F1F3; border-radius: 10px;
+    padding: 16px 18px; font-size: 15px; line-height: 1.8; color: #1F2329;
+    max-height: 240px; overflow-y: auto;
+  }
+  .rv-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px; border: 1px solid #F0F1F3; border-radius: 10px;
+    margin-bottom: 8px; background: #FAFBFC; font-size: 14px;
+  }
+  .rv-row:last-child { margin-bottom: 0; }
+  .rv-empty { background: #F7F8FA; color: #8F959E; }
+  .rv-name { font-weight: 500; color: #1F2329; width: 56px; }
+  .rv-result { font-weight: 500; }
+  .rv-result.c-pass { color: #00B42A; }
+  .rv-result.c-good { color: #FF7D00; }
+  .rv-result.c-rej { color: #F53F3F; }
+  .rv-reason { font-size: 12px; color: #646A73; max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rv-reason-inline { font-size: 12px; color: #646A73; flex: 1; min-width: 0; word-break: break-all; }
+  .rv-reason-full {
+    font-size: 12px; color: #646A73; line-height: 1.6; word-break: break-all;
+    background: #F7F8FA; border-radius: 8px; padding: 10px 12px; margin-top: 8px;
+  }
+  .rv-time { margin-left: auto; font-size: 12px; color: #8F959E; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; line-height: 1.5; }
+  .rv-dur { color: #3370FF; font-weight: 500; }
+  .vote-empty { color: #C9CDD4; font-weight: 400; }
+  .admin-empty { padding: 48px 0; text-align: center; color: #8F959E; font-size: 13px; }
+  .v-pending { color: #C9CDD4; }
+  .v-ing { color: #FF7D00; }
+  .v-done { color: #00B42A; }
+  .summ-tag {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 1px 6px; border-radius: 4px; margin-left: 5px;
+  }
+  .st-pass { background: #E8FFEA; color: #00B42A; }
+  .st-good { background: #FFF7E8; color: #FF7D00; }
+  .st-rej { background: #FFECE8; color: #F53F3F; }
+  .cell-id { font-size: 12px; color: #8F959E; font-family: Consolas, monospace; }
+  .cell-time { font-size: 12px; color: #8F959E; }
+  .cell-et { font-size: 12px; color: #8F959E; }
+  .modal-body { font-size: 13px; color: #646A73; }
+  .modal-empty { text-align: center; padding: 36px 0; color: #8F959E; font-size: 13px; }
+  .reason-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .reason-item {
+    display: flex; align-items: center; gap: 10px; border: 1px solid #E5E6EB;
+    border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all .15s;
+  }
+  .reason-item:hover { border-color: #3370FF; }
+  .reason-item.selected { border-color: #3370FF; background: #EAF1FF; }
+  .reason-item .radio {
+    width: 16px; height: 16px; border-radius: 50%; border: 2px solid #C9CDD4;
+    flex-shrink: 0; position: relative;
+  }
+  .reason-item.selected .radio { border-color: #3370FF; }
+  .reason-item.selected .radio::after {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%; background: #3370FF;
+  }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+  .btn-plain {
+    background: #FFF; border: 1px solid #E5E6EB; color: #646A73;
+    font-size: 13px; padding: 9px 22px; border-radius: 8px; transition: all .15s;
+  }
+  .btn-plain:hover { border-color: #C9CDD4; color: #1F2329; }
+  .btn-confirm {
+    background: #F53F3F; color: #FFF; font-size: 13px; padding: 9px 22px; border-radius: 8px;
+    transition: all .15s;
+  }
+  .btn-confirm:hover { background: #D93030; }
+  .btn-confirm:disabled { background: #C9CDD4; cursor: not-allowed; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; left: 50%; bottom: 48px; transform: translateX(-50%) translateY(20px);
+    background: #1F2329; color: #FFF; font-size: 13px; padding: 11px 22px; border-radius: 10px;
+    opacity: 0; pointer-events: none; transition: all .25s; z-index: 300;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 细节打磨 ===== */
+  ::selection { background: rgba(51,112,255,.18); }
+  @keyframes statPop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .stat-pop { animation: statPop .3s ease; display: inline-block; }
+  @media (max-width: 1100px) {
+    .work-layout { flex-direction: column; }
+    .work-side { width: 100%; }
+  }
+
+  /* ===== 管理后台（批次 4 重构） ===== */
+  .section-title { font-size: 18px; font-weight: 500; margin: 24px 0 14px; }
+  .admin-stats { display: flex; gap: 16px; }
+  .stat-card {
+    flex: 1; background: #FFF; border: 1px solid #E5E6EB; border-radius: 12px; padding: 16px 20px;
+  }
+  .stat-card .stat-label { font-size: 12px; color: #8F959E; }
+  .stat-card .stat-value { font-size: 24px; font-weight: 500; margin-top: 4px; }
+  .stat-card .stat-value .unit { font-size: 13px; color: #8F959E; font-weight: 400; margin-left: 2px; }
+  .stat-card .stat-value.c-orange { color: #FF7D00; }
+  .stat-card .stat-value.c-green { color: #00B42A; }
+  .stat-card.filterable { cursor: pointer; transition: all .15s; border: 1px solid #E5E6EB; }
+  .stat-card.filterable:hover { border-color: #3370FF; }
+  .stat-card.filterable.active { border-color: #3370FF; background: #F5F8FF; }
+  .admin-list-title { display: flex; align-items: center; gap: 12px; }
+  .list-count { font-size: 13px; color: #8F959E; }
+  .filter-bar { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .f-input {
+    border: 1px solid #E5E6EB; border-radius: 8px; padding: 6px 10px;
+    font-size: 13px; color: #1F2329; background: #FFF; outline: none;
+  }
+  .f-input:focus { border-color: #3370FF; }
+  .f-input.f-date { padding: 5px 8px; }
+  .f-sep { font-size: 12px; color: #8F959E; }
+  .f-clear {
+    background: #FFF; border: 1px solid #E5E6EB; color: #646A73;
+    font-size: 12px; padding: 6px 12px; border-radius: 8px; transition: all .15s;
+  }
+  .f-clear:hover { border-color: #F53F3F; color: #F53F3F; }
+  .admin-table-card { padding: 0; overflow: hidden; }
+  .admin-table-head { display: flex; padding: 13px 24px; font-size: 13px; color: #8F959E; border-bottom: 1px solid #F2F3F5; background: #FAFBFC; }
+  .admin-table-head span { flex: 1; }
+  .admin-table-head span.col-play { flex: 1.5; }
+  .admin-table-head span.col-id { flex: 0.8; }
+  .admin-table-head span.col-vote { flex: 1.2; }
+  .admin-table-head span.col-time { flex: 1; }
+  .admin-table-head span.col-et { flex: 1; }
+  .admin-table-head span.col-op { flex: 0.7; }
+  .admin-row {
+    display: flex; align-items: center; padding: 12px 24px; font-size: 14px;
+    border-bottom: 1px solid #ECEEF0; transition: background .15s; cursor: default;
+  }
+  .admin-row:last-child { border-bottom: none; }
+  .admin-row:nth-child(even) { background: #FAFBFC; }
+  .admin-row:hover { background: #F0F5FF; }
+  .admin-row > span { flex: 1; min-width: 0; }
+  .admin-row .c-play { flex: 1.5; }
+  .admin-row .cell-id { flex: 0.8; }
+  .admin-row .c-vote { flex: 1.2; }
+  .admin-row .cell-time { flex: 1; }
+  .admin-row .cell-et { flex: 1; }
+  .admin-row .c-op { flex: 0.7; }
+  .c-play { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .c-play-info { display: flex; flex-direction: column; min-width: 0; width: 100%; }
+  .c-play-name { font-weight: 500; color: #1F2329; }
+  .content-summ {
+    display: block; width: 100%;
+    font-size: 12px; color: #8F959E; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .thumb { width: 44px; height: 27px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+  .status-badge { display: inline-block; font-size: 12px; border-radius: 4px; padding: 2px 10px; font-weight: 500; }
+  .s-pending { background: #F2F3F5; color: #646A73; }
+  .s-ing { background: #FFF7E8; color: #FF7D00; }
+  .s-done { background: #E8FFEA; color: #00B42A; }
+  .btn-detail {
+    background: #EAF1FF; color: #3370FF; font-size: 13px;
+    padding: 6px 16px; border-radius: 8px; transition: all .15s;
+  }
+  .btn-detail:hover { background: #D8E6FF; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo"><span class="logo-mark">赏</span>鉴赏家内容评审系统<span class="badge">Demo</span></div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-view="reviewer">评委工作台</button>
+    <button class="tab-btn" data-view="admin">管理后台</button>
+  </nav>
+  <div class="user">
+    <div class="avatar">我</div>
+    <span>评委 · 我</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ========== 评委工作台 ========== -->
+  <section id="view-reviewer">
+    <div class="batch-note">批次 3 · 完整规则：每日完成上限（演示 10 条）；接单状态三态（可接单 / 处理中 / 今日已完成）</div>
+
+    <div class="work-layout">
+      <!-- 主区域：任务卡 / 空态 -->
+      <div class="work-main">
+        <div class="workbench" id="workbench"></div>
+      </div>
+
+      <!-- 侧栏：今日概况 + 评审标准 -->
+      <aside class="work-side">
+        <div class="side-card">
+          <div class="side-title">今日概况</div>
+          <button class="side-stat clickable" id="stat-done-btn">
+            <span class="ss-label">今日完成</span>
+            <span class="ss-value"><span id="stat-done">0</span><span class="unit">条</span><span class="arrow">›</span></span>
+          </button>
+          <div class="side-status"><span class="dot blue" id="status-dot"></span><span id="status-text">可接单</span></div>
+        </div>
+        <div class="side-card">
+          <div class="side-title">评审标准速览</div>
+          <div class="std-item"><span class="std-dot" style="background:#00B42A;"></span><span><b>通过</b> — 内容真实有效，与玩法相关</span></div>
+          <div class="std-item"><span class="std-dot" style="background:#FF7D00;"></span><span><b>优质</b> — 内容出色，值得推荐</span></div>
+          <div class="std-item"><span class="std-dot" style="background:#F53F3F;"></span><span><b>不通过</b> — 黄赌毒 / 水贴 / 无关 / 抄袭</span></div>
+        </div>
+        <button class="side-link" id="btn-history">历史任务<span class="arrow">›</span></button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========== 管理后台 ========== -->
+  <section id="view-admin" class="hidden">
+    <div class="batch-note">批次 5 · 内容池总览 + 任务详情：点击任务行查看完整鉴赏信息与评委结论（只展示，不判定）</div>
+
+    <div class="section-title">内容池总览</div>
+    <div class="admin-stats">
+      <div class="stat-card filterable" data-filter="all"><div class="stat-label">内容池数量</div><div class="stat-value" id="ad-total">0<span class="unit">个</span></div></div>
+      <div class="stat-card filterable" data-filter="pending"><div class="stat-label">待派发</div><div class="stat-value" id="ad-pending">0<span class="unit">个</span></div></div>
+      <div class="stat-card filterable" data-filter="reviewing"><div class="stat-label">评审中</div><div class="stat-value c-orange" id="ad-reviewing">0<span class="unit">个</span></div></div>
+      <div class="stat-card filterable" data-filter="done"><div class="stat-label">评审完成</div><div class="stat-value c-green" id="ad-done">0<span class="unit">个</span></div></div>
+    </div>
+
+    <div class="section-title admin-list-title">
+      <span>任务列表</span>
+      <span class="list-count" id="list-count"></span>
+      <div class="filter-bar">
+        <input type="text" id="f-play" placeholder="搜索玩法 ID" class="f-input">
+        <select id="f-tend" class="f-input">
+          <option value="">全部倾向</option>
+          <option value="推荐">推荐</option>
+          <option value="不推荐">不推荐</option>
+        </select>
+        <input type="date" id="f-from" class="f-input f-date">
+        <span class="f-sep">至</span>
+        <input type="date" id="f-to" class="f-input f-date">
+        <button id="f-clear" class="f-clear">清除筛选</button>
+      </div>
+    </div>
+    <div class="card admin-table-card">
+      <div class="admin-table-head">
+        <span class="col-play">鉴赏内容</span><span class="col-id">ID</span><span>鉴赏家倾向</span><span class="col-time">鉴赏提交时间</span><span class="col-et">审核结束时间</span><span>审核状态</span><span class="col-vote">评价结论</span><span class="col-op">操作</span>
+      </div>
+      <div id="admin-list"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 今日完成弹窗 -->
+<div class="mask hidden" id="modal-today">
+  <div class="modal">
+    <div class="modal-title">今日完成</div>
+    <div class="modal-body">
+      <div class="modal-empty">今天还没有评审记录</div>
+    </div>
+    <div class="modal-actions"><button class="btn-plain" data-close="modal-today">关闭</button></div>
+  </div>
+</div>
+
+<!-- 历史任务弹窗 -->
+<div class="mask hidden" id="modal-history">
+  <div class="modal modal-lg-wide">
+    <button class="modal-close" data-close="modal-history">×</button>
+    <div class="modal-title">历史任务</div>
+    <div class="modal-body">
+      <div class="h-table-head">
+        <span class="h-play">鉴赏内容</span><span class="h-id">ID</span><span class="h-time">完成审核时间</span><span>评估结论</span><span class="h-op">操作</span>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 鉴赏内容详情弹窗 -->
+<div class="mask hidden" id="modal-detail">
+  <div class="modal modal-lg">
+    <button class="modal-close" data-close="modal-detail">×</button>
+    <div class="modal-title" id="detail-title">鉴赏内容详情</div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- 不通过原因弹窗 -->
+<div class="mask hidden" id="modal-reject">
+  <div class="modal">
+    <div class="modal-title">选择不通过原因</div>
+    <div class="modal-body">
+      <div class="reason-list" id="reason-list"></div>
+      <div class="modal-actions">
+        <button class="btn-plain" data-close="modal-reject">取消</button>
+        <button class="btn-confirm" id="btn-reject-confirm" disabled>确认提交</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ========== Mock 数据 ========== */
+  const REASONS = [
+    '存在黄赌毒、涉政、广告内容',
+    '无意义水贴（如重复复制、恶意水内容）',
+    '点评文本和地图毫无关联（如玩法为跑酷点评内容为单挑）',
+    '内容抄袭',
+  ];
+  const POOL = [
+    { id: 1, play: '玩法名称1', tend: '推荐', cover: 'covers/cover-1.png', time: '08-06 10:24', map: '10023', text: '这关跑酷手感很丝滑，跳跃时机设计得恰到好处，连招衔接也流畅。整体节奏偏快，前两段赛道偏向教学，后半段的连续跳台需要精准预判，第一次玩很容易踩空，但熟练之后非常爽快。特效和音效配合得不错，起跳和落地都有明显的反馈，不会觉得飘。关卡设计上，中段的移动平台和加速带衔接得很自然，没有突兀感。唯一不太满意的是后半段有一个检查点距离太远，失误一次要重跑不少距离，希望后续能优化。总体来说这个地图值得反复挑战，推荐给喜欢跑酷的玩家。', reviews: [{ r: '阿珍', v: '通过' }] },
+    { id: 2, play: '玩法名称2', tend: '不推荐', cover: 'covers/cover-2.png', time: '08-06 10:10', map: '10047', text: '对手 AI 太弱了，三秒钟就秒杀，毫无挑战性。', reviews: [] },
+    { id: 3, play: '玩法名称1', tend: '推荐', cover: 'covers/cover-3.png', time: '08-06 09:58', map: '10031', text: '跑图风景不错，值得一玩。', reviews: [{ r: '阿强', v: '优质' }] },
+    { id: 4, play: '玩法名称3', tend: '推荐', cover: 'covers/cover-wide.png', time: '08-06 09:41', map: '10058', text: '氮气加速手感很棒，弯道漂移非常爽快。地图整体是一个环形赛道，视野开阔，直道给足了加速的空间，两个发卡弯的位置设计得很考究，出弯后正好接一段上坡，节奏感很好。试了几次之后逐渐找到了完美的漂移路线，冲线那一刻真的很有成就感。唯一的小问题是夜晚场景的灯光有点晃眼，长时间玩会有点累，希望优化一下光照。总体来说是一张很有质感的竞速图，强烈推荐。', reviews: [] },
+    { id: 5, play: '玩法名称1', tend: '不推荐', cover: 'covers/cover-5.png', time: '08-06 09:20', map: '10019', text: '这个点评和地图毫无关系，我进来是想看跑酷的，结果满篇在说单挑玩法怎么怎么样，完全货不对板。而且内容空洞，翻来覆去就那么几句话，明显是为了凑字数发的，属于恶意水内容，建议直接处理掉。', reviews: [{ r: '阿珍', v: '不通过', reason: '点评文本和地图毫无关联（如玩法为跑酷点评内容为单挑）' }] },
+    { id: 6, play: '玩法名称2', tend: '推荐', cover: 'covers/cover-1.png', time: '08-05 22:15', map: '10072', text: '连招设计合理，平衡性不错，值得反复练习。双方的基础攻击和格挡节奏配合得很好，新手也能很快上手，但连招的深度足够高手钻研很久。我试了十几局，不同角色之间的克制关系很清晰，不存在明显的一边倒。特别表扬一下受击反馈，被打到的时候镜头抖动和音效都很到位，打击感十足。建议后续能增加更多模式，比如排位赛，让对战更有目标感。', reviews: [] },
+    { id: 7, play: '玩法名称3', tend: '不推荐', cover: 'covers/cover-2.png', time: '08-05 21:48', map: '10084', text: '随便打几个字凑数。', reviews: [] },
+    { id: 8, play: '玩法名称1', tend: '推荐', cover: 'covers/cover-tall.png', time: '08-05 21:02', map: '10012', text: '这个地图跳跃点设计很精妙，想挑战最高分。整张图把跑酷玩出了新的花样，中间有一段必须借助墙壁反弹才能过去的连跳区，第一次试的时候失败了十几次，但一旦掌握节奏，那种行云流水的感觉特别上瘾。地图里还藏了三条捷径，需要细心观察才能发现，增加了不少探索乐趣。美中不足的是最后一段的判定稍微有点苛刻，误触就容易掉下去，希望把边缘的判定放宽一点。瑕不掩瑜，这是一张值得反复研究的好图。', reviews: [] },
+    { id: 9, play: '玩法名称2', tend: '推荐', cover: 'covers/cover-4.png', time: '08-05 20:30', map: '10066', text: '实战演练太棒了，招招见血，连招帅炸。这个玩法把竞技的爽快感做到了极致，轻重攻击的衔接、闪避的时机、技能的后摇取消，每一个细节都值得琢磨。上手门槛不算高，但天花板非常高，高手过招的时候每一帧都在博弈。我特别喜欢它的连招演示系统，可以自由查看每个角色的完整连招表和实战范例，学起来特别直观。建议能加入观战系统，看看顶尖玩家是怎么打的。总体来说是近期玩过最爽的竞技玩法，强烈推荐。', reviews: [{ r: '阿珍', v: '通过' }, { r: '阿强', v: '优质' }, { r: '阿花', v: '不通过', reason: '内容抄袭' }] },
+    { id: 10, play: '玩法名称3', tend: '不推荐', cover: 'covers/cover-5.png', time: '08-05 19:55', map: '10090', text: '这张图的赛道设计和隔壁山海图几乎一模一样，从起跑线的位置到弯道的角度，甚至连路边装饰的摆放都相同，摆明了是直接抄过来的。做游戏可以借鉴，但这样原封不动地搬运实在说不过去，完全看不出自己的设计。建议运营方面对这种内容进行核查，避免劣质内容拉低整体质量。', reviews: [] },
+    { id: 11, play: '玩法名称1', tend: '推荐', cover: 'covers/cover-1.png', time: '08-06 11:05', map: '10035', text: '新更新的这张跑酷图非常惊艳，把之前所有地图的优点都集合了起来。跳跃的反馈感特别扎实，配上恰到好处的镜头调度，全程玩下来行云流水。唯一的建议是中段的加速带可以再给一点容错空间，其他都很满意，推荐给所有跑酷玩家。', reviews: [] },
+    { id: 12, play: '玩法名称2', tend: '不推荐', cover: 'covers/cover-2.png', time: '08-06 11:12', map: '10051', text: '天天水天天水，每天发这种没营养的内容，也不知道审核是怎么过的。', reviews: [] },
+    { id: 13, play: '玩法名称3', tend: '推荐', cover: 'covers/cover-3.png', time: '08-06 11:20', map: '10063', text: '环山赛道风景绝美，从山脚一路飙到山顶，每一段弯道都有不同的景致。车身的操控感调校得很舒服，新手开辅助也能轻松上手，老玩家关掉辅助能体会到极限压弯的快感。赛道长度适中，适合碎片时间玩一把，强烈推荐。', reviews: [] },
+    { id: 14, play: '玩法名称1', tend: '不推荐', cover: 'covers/cover-5.png', time: '08-06 11:31', map: '10028', text: '这个所谓的鉴赏内容通篇都在讲别的玩法怎么玩，跟这张跑酷地图半毛钱关系都没有，纯粹是来捣乱的，建议直接下架。', reviews: [] },
+    { id: 15, play: '玩法名称2', tend: '推荐', cover: 'covers/cover-4.png', time: '08-06 11:42', map: '10077', text: '单挑玩法的连招系统做得越来越好了，这次的更新又加了两个新角色，动作模组非常用心，每个角色的打法风格差异都很大。实战平衡性也调整得不错，没有明显超模的角色。建议官方多出一些教学视频，新手入门会更顺畅。', reviews: [] },
+  ];
+  const ME = '我';
+
+  // 已派发评委（assigned）初始数据：真实环境由派单引擎写入，demo 预置部分场景
+  // 1、5、9 已派给阿珍/阿强；2 已派给阿珍（未交）；3 已派给阿强；9 另有阿花（三种结论齐全）
+  const ASSIGN = { 1: ['阿珍', '阿强'], 2: ['阿珍'], 3: ['阿强'], 5: ['阿珍', '阿强'], 9: ['阿珍', '阿强', '阿花'] };
+  POOL.forEach(t => {
+    t.assigned = (ASSIGN[t.id] || []).slice();
+    // 提交时间补全为 年-月-日 时:分:秒
+    const [d, tm] = t.time.split(' ');
+    const [mo, day] = d.split('-');
+    const sec = String((t.id * 7) % 60).padStart(2, '0');
+    t.time = `2026-${mo}-${day} ${tm}:${sec}`;
+    // 预置评委票补评审时间：任务提交时间 + 每票 12 分钟偏移（「我」的票运行时已带实际 time）
+    t.reviews.forEach((r, i) => {
+      if (!r.time) {
+        const base = new Date(t.time.replace(' ', 'T'));
+        base.setMinutes(base.getMinutes() + (i + 1) * 12);
+        const p = n => String(n).padStart(2, '0');
+        r.time = `${base.getFullYear()}-${p(base.getMonth() + 1)}-${p(base.getDate())} ${p(base.getHours())}:${p(base.getMinutes())}:${p(base.getSeconds())}`;
+      }
+    });
+    // 预置评委派单时间：任务提交时间 + (2 + i*4) 分钟（恒晚于提交、早于评审提交；耗时 = 提交-派单）
+    t.assignedAt = {};
+    t.assigned.forEach((name, i) => {
+      const base = new Date(t.time.replace(' ', 'T'));
+      base.setMinutes(base.getMinutes() + 2 + i * 4);
+      const p = n => String(n).padStart(2, '0');
+      t.assignedAt[name] = `${base.getFullYear()}-${p(base.getMonth() + 1)}-${p(base.getDate())} ${p(base.getHours())}:${p(base.getMinutes())}:${p(base.getSeconds())}`;
+    });
+  });
+
+  // 玩法 ID 映射（demo 用占位 ID，真实环境随内容下发）
+  const PLAY_IDS = {
+    '玩法名称1': 'PLAY-001',
+    '玩法名称2': 'PLAY-002',
+    '玩法名称3': 'PLAY-003',
+  };
+  // 内容来源（工坊/共创）：鉴赏内容自带字段，demo 按玩法映射
+  const SOURCE = {
+    '玩法名称1': '工坊',
+    '玩法名称2': '共创',
+    '玩法名称3': '工坊',
+  };
+  const srcBadge = play => {
+    const src = SOURCE[play] || '工坊';
+    const cls = src === '共创' ? 'sb-cocreate' : 'sb-workshop';
+    return `<span class="source-badge ${cls}"><span class="sb-dot"></span>${src}</span>`;
+  };
+  const COPY_SVG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+
+  // 每日完成上限（真实环境 20，demo 便于演示设为 10）
+  const DAILY_LIMIT = 10;
+
+  /* ========== 我的状态 ========== */
+  const state = {
+    current: null,
+    lastPlay: null,
+    done: 0,
+    reviewedIds: [],
+    stopAfterCurrent: false,   // 勾选「完成本单后停止接单」：一次性软停止
+  };
+
+  /* ========== 派单逻辑 ========== */
+  function dispatch() {
+    const candidates = POOL.filter(t => t.reviews.length < 3 && !state.reviewedIds.includes(t.id));
+    let pick = null;
+    if (candidates.length) {
+      pick = state.lastPlay
+        ? (candidates.find(t => t.play === state.lastPlay) || candidates[0])
+        : candidates[0];
+    }
+    if (pick && !pick.assigned.includes(ME)) {
+      pick.assigned.push(ME);   // 派单成功：记录已派发给「我」
+      pick.assignedAt[ME] = nowStr();   // 记录派单时间（后台详情展示）
+    }
+    state.current = pick;
+    return pick;
+  }
+
+  /* ========== 渲染 ========== */
+  const wb = document.getElementById('workbench');
+
+  function render() {
+    document.getElementById('stat-done').textContent = state.done;
+
+    // ① 先确定状态：无当前任务、未达上限且未勾选停止时尝试派单
+    if (!state.current && state.done < DAILY_LIMIT && !state.stopAfterCurrent) {
+      dispatch();
+    }
+
+    // ② 再算状态灯（基于最终 state.current）
+    let status;
+    if (state.current) {
+      status = { text: '处理中', dot: 'yellow' };
+    } else if (state.done >= DAILY_LIMIT) {
+      status = { text: '今日已完成', dot: 'green' };
+    } else {
+      status = { text: '可接单', dot: 'blue' };
+    }
+    document.getElementById('status-text').textContent = status.text;
+    document.getElementById('status-dot').className = 'dot ' + status.dot;
+
+    // ③ 渲染工作台
+    if (state.current) {
+      renderTask(state.current);
+    } else if (state.done >= DAILY_LIMIT) {
+      renderDone('limit');
+    } else if (state.stopAfterCurrent) {
+      renderIdle('已完成本单，点「开始接单」继续接单');
+    } else {
+      renderDone('empty');
+    }
+  }
+
+  function renderTask(t) {
+    const tendCls = t.tend === '推荐' ? 'tend-rec' : 'tend-nrec';
+    wb.innerHTML = `
+      <div class="task-card">
+        <div class="task-cover-wrap">
+          <img class="task-cover" src="${t.cover}" alt="${t.play}">
+          <div class="cover-mask"></div>
+          <div class="cover-title">${srcBadge(t.play).replace('source-badge', 'source-badge cover-src')}${t.play}</div>
+        </div>
+        <div class="task-tags">
+          <span class="tag ${tendCls}">鉴赏家倾向：${t.tend}</span>
+        </div>
+        <div class="task-meta">
+          <svg class="meta-ic" viewBox="0 0 24 24" fill="none" stroke="#8F959E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>鉴赏提交时间 ${t.time}</span>
+          <span class="meta-sep">·</span>
+          <svg class="meta-ic" viewBox="0 0 24 24" fill="none" stroke="#8F959E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span>ID ${t.map}<button class="copy-btn" data-copy="${t.map}" title="复制 ID">${COPY_SVG}</button></span>
+          <span class="countdown" id="cd">⏱ 05:00</span>
+        </div>
+        <div class="task-content">${t.text}</div>
+        <div class="verdict-label">给出你的结论</div>
+        <div class="verdict-btns">
+          <button class="vbtn pass" data-act="pass">通过</button>
+          <button class="vbtn good" data-act="good">优质</button>
+          <button class="vbtn reject" data-act="reject">不通过</button>
+        </div>
+        <label class="stop-row"><input type="checkbox" id="chk-stop" ${state.stopAfterCurrent ? 'checked' : ''}>完成该任务后停止接单</label>
+      </div>`;
+    startCountdown(t);
+  }
+
+  function renderDone(kind) {
+    if (kind === 'limit') {
+      wb.innerHTML = `
+        <div class="wb-done">
+          <div class="done-icon">✓</div>
+          <div class="idle-title">今日已完成</div>
+          <div class="idle-sub">今天的任务都评完了，明天再来吧</div>
+        </div>`;
+      return;
+    }
+    wb.innerHTML = `
+      <div class="wb-done">
+        <div class="done-icon">✓</div>
+        <div class="idle-title">暂无更多任务</div>
+        <div class="idle-sub">池子里的任务都处理完了，过会儿再来看看</div>
+      </div>`;
+  }
+
+  function renderIdle(subText) {
+    wb.innerHTML = `
+      <div class="wb-idle">
+        <div class="idle-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3370FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h4l2-3h6l2 3h4v13H3z"/>
+            <circle cx="12" cy="14" r="3.2"/>
+          </svg>
+        </div>
+        <div class="idle-title">暂无任务</div>
+        <div class="idle-sub">${subText || '点「开始接单」领取一个鉴赏任务'}</div>
+        <button class="btn-primary" id="btn-take">开始接单</button>
+      </div>`;
+    document.getElementById('btn-take').addEventListener('click', () => {
+      state.current = null;
+      state.stopAfterCurrent = false;   // 一次性软停止：点开始接单恢复自动续单
+      render();
+    });
+  }
+
+  /* ========== 操作 ========== */
+  wb.addEventListener('click', e => {
+    const btn = e.target.closest('.vbtn');
+    if (!btn) return;
+    const act = btn.dataset.act;
+    const t = state.current;
+    if (!t) return;
+    if (act === 'reject') {
+      openRejectModal();
+    } else {
+      submit(t, act);
+    }
+  });
+
+  /* 勾选「完成本单后停止接单」 */
+  wb.addEventListener('change', e => {
+    if (e.target && e.target.id === 'chk-stop') {
+      state.stopAfterCurrent = e.target.checked;
+    }
+  });
+
+  /* ========== 评审倒计时（demo 5 分钟，真实环境 1 小时） ========== */
+  const REVIEW_MIN = 5;   // 真实环境 1 小时
+  let cdTimer = null;
+  let cdDeadline = 0;
+
+  function startCountdown(t) {
+    stopCountdown();
+    cdDeadline = Date.now() + REVIEW_MIN * 60 * 1000;
+    const el = document.getElementById('cd');
+    if (!el) return;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((cdDeadline - Date.now()) / 1000));
+      const mm = String(Math.floor(left / 60)).padStart(2, '0');
+      const ss = String(left % 60).padStart(2, '0');
+      el.textContent = '⏱ ' + mm + ':' + ss;
+      el.classList.toggle('warn', left <= 60);
+      if (left <= 0) {
+        stopCountdown();
+        handleTimeout(t);
+        return;
+      }
+    };
+    tick();
+    cdTimer = setInterval(tick, 1000);
+  }
+
+  function stopCountdown() {
+    if (cdTimer) { clearInterval(cdTimer); cdTimer = null; }
+  }
+
+  function handleTimeout(t) {
+    // 超时：任务自动回池（名额释放，已交票保留）
+    t.assigned = t.assigned.filter(n => n !== ME);
+    if (t.assignedAt) delete t.assignedAt[ME];
+    const rm = document.getElementById('modal-reject');
+    if (rm) rm.classList.add('hidden');
+    state.current = null;
+    toast('评审超时，任务已回池');
+    render();
+  }
+
+  function nowStr() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  }
+
+  /* 评审耗时 = 提交时间 − 派单时间，展示为 X 分钟 */
+  function fmtDur(from, to) {
+    const ms = new Date(to.replace(' ', 'T')) - new Date(from.replace(' ', 'T'));
+    const min = Math.max(0, Math.round(ms / 60000));
+    if (min < 1) return '<1 分钟';
+    if (min < 60) return min + ' 分钟';
+    return Math.floor(min / 60) + ' 小时 ' + (min % 60) + ' 分钟';
+  }
+
+  function submit(t, verdict, reason) {
+    // 结论值统一为中文标签（按钮值是 pass/good/reject，reject 弹窗传中文）；记录评审时间
+    stopCountdown();
+    const V_LABEL = { pass: '通过', good: '优质', reject: '不通过' };
+    t.reviews.push({ r: ME, v: V_LABEL[verdict] || verdict, reason: reason || '', time: nowStr() });
+    state.reviewedIds.push(t.id);
+    state.lastPlay = t.play;
+    state.done += 1;
+    state.current = null;
+    render();
+    const doneEl = document.getElementById('stat-done');
+    doneEl.classList.remove('stat-pop');
+    void doneEl.offsetWidth;
+    doneEl.classList.add('stat-pop');
+  }
+
+  /* ========== 不通过原因弹窗 ========== */
+  let selectedReason = null;
+
+  function openRejectModal() {
+    selectedReason = null;
+    document.getElementById('reason-list').innerHTML = REASONS.map((r, i) => `
+      <div class="reason-item" data-i="${i}">
+        <span class="radio"></span><span>${r}</span>
+      </div>`).join('');
+    document.getElementById('btn-reject-confirm').disabled = true;
+    document.getElementById('modal-reject').classList.remove('hidden');
+  }
+
+  document.getElementById('reason-list').addEventListener('click', e => {
+    const item = e.target.closest('.reason-item');
+    if (!item) return;
+    document.querySelectorAll('.reason-item').forEach(x => x.classList.remove('selected'));
+    item.classList.add('selected');
+    selectedReason = REASONS[+item.dataset.i];
+    document.getElementById('btn-reject-confirm').disabled = false;
+  });
+
+  document.getElementById('btn-reject-confirm').addEventListener('click', () => {
+    if (selectedReason == null) return;
+    const t = state.current;
+    closeModal('modal-reject');
+    if (t) submit(t, '不通过', selectedReason);
+  });
+
+  /* ========== 鉴赏内容详情弹窗 ========== */
+  function openDetail(id) {
+    const t = POOL.find(x => x.id === id);
+    if (!t) return;
+    const tendCls = t.tend === '推荐' ? 'tend-rec' : 'tend-nrec';
+    const playId = PLAY_IDS[t.play] || '—';
+    const isDone = t.reviews.length >= 3;
+    const isReviewing = t.assigned.length > 0 && !isDone;
+
+    document.getElementById('detail-title').textContent = '鉴赏内容详情';
+
+    let statusText;
+    if (isDone) {
+      statusText = '评审完成';
+    } else if (isReviewing) {
+      statusText = '评审中';
+    } else {
+      statusText = '待派发';
+    }
+
+    // 评委结论明细：按已派发的评委展示；已提交显示结论，已派未交显示「待评审」；无人派发显示空态
+    let conclusionHtml;
+    if (t.assigned.length === 0) {
+      conclusionHtml = '<div class="rv-row rv-empty"><span>暂无评委接单</span></div>';
+    } else {
+      const rows = t.assigned.map(name => {
+        const at = t.assignedAt ? t.assignedAt[name] : '';
+        const r = t.reviews.find(x => x.r === name);
+        if (r) {
+          const cls = r.v === '通过' ? 'c-pass' : (r.v === '优质' ? 'c-good' : 'c-rej');
+          const dur = at && r.time ? fmtDur(at, r.time) : '';
+          return `<div class="rv-row">
+            <span class="rv-name">${name}</span>
+            <span class="rv-result ${cls}">${r.v}</span>
+            ${r.reason ? `<span class="rv-reason-inline">原因：${r.reason}</span>` : ''}
+            <span class="rv-time">
+              <span class="rv-sub">派单 ${at || '—'}</span>
+              <span class="rv-sub">提交 ${r.time || '—'}</span>
+              ${dur ? `<span class="rv-dur">评审耗时 ${dur}</span>` : ''}
+            </span>
+          </div>`;
+        }
+        return `<div class="rv-row rv-empty">
+          <span class="rv-name">${name}</span>
+          <span>待评审</span>
+          <span class="rv-time"><span class="rv-sub">派单 ${at || '—'}</span></span>
+        </div>`;
+      });
+      conclusionHtml = rows.join('');
+    }
+
+    document.getElementById('detail-body').innerHTML = `
+      <div class="detail-head">
+        <img class="detail-cover" src="${t.cover}" alt="">
+        <div>
+          <div class="detail-title">${srcBadge(t.play)}${t.play}<span class="play-id">ID：${playId}<button class="copy-btn" data-copy="${playId}" title="复制 ID">${COPY_SVG}</button></span></div>
+          <div class="detail-meta">鉴赏提交时间 ${t.time}</div>
+          <div class="detail-tags">
+            <span class="tag ${tendCls}" style="font-size:12px;padding:2px 8px;">鉴赏家倾向：${t.tend}</span>
+            <span class="status-badge ${isDone ? 's-done' : (isReviewing ? 's-ing' : 's-pending')}">${statusText}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-section">鉴赏正文</div>
+      <div class="detail-text">${t.text}</div>
+      <div class="detail-section">评委评价结论</div>
+      ${conclusionHtml}`;
+
+    document.getElementById('modal-detail').classList.remove('hidden');
+  }
+
+  /* ========== 弹窗通用 ========== */
+  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => closeModal(btn.dataset.close));
+  });
+  document.querySelectorAll('.mask').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.add('hidden'); });
+  });
+
+  document.getElementById('stat-done-btn').addEventListener('click', () => {
+    document.getElementById('modal-today').classList.remove('hidden');
+  });
+  document.getElementById('btn-history').addEventListener('click', () => {
+    openHistory();
+  });
+
+  /* ========== 历史任务弹窗 ========== */
+  function openHistory() {
+    const mine = POOL.filter(t => t.reviews.some(r => r.r === ME));
+    const list = document.getElementById('history-list');
+    if (mine.length === 0) {
+      list.innerHTML = '<div class="modal-empty">暂无历史任务</div>';
+    } else {
+      list.innerHTML = mine.map(t => {
+        const my = t.reviews.find(r => r.r === ME);
+        const stCls = my.v === '通过' ? 'st-pass' : (my.v === '优质' ? 'st-good' : 'st-rej');
+        const playId = PLAY_IDS[t.play] || '—';
+        const summ = t.text.length > 26 ? t.text.slice(0, 26) + '…' : t.text;
+        return `<div class="h-row" data-id="${t.id}">
+          <span class="h-play-cell">
+            <img class="thumb" src="${t.cover}" alt="">
+            <span class="c-play-info">
+              <span class="c-play-name">${srcBadge(t.play)}${t.play}</span>
+              <span class="content-summ">${summ}</span>
+            </span>
+          </span>
+          <span class="cell-id">${playId}<button class="copy-btn" data-copy="${playId}" title="复制 ID">${COPY_SVG}</button></span>
+          <span class="cell-time">${my.time || '—'}</span>
+          <span><span class="summ-tag ${stCls}">${my.v}</span></span>
+          <span class="h-op-cell"><button class="btn-detail" data-id="${t.id}" data-mine="1">查看详情</button></span>
+        </div>`;
+      }).join('');
+    }
+    document.getElementById('modal-history').classList.remove('hidden');
+  }
+
+  /* 历史列表「查看详情」→ 我的评审详情 */
+  document.getElementById('history-list').addEventListener('click', e => {
+    const btn = e.target.closest('.btn-detail');
+    if (!btn || !btn.dataset.mine) return;
+    openMyDetail(+btn.dataset.id);
+  });
+
+  /* ========== 我的评审详情（历史） ========== */
+  function openMyDetail(id) {
+    const t = POOL.find(x => x.id === id);
+    if (!t) return;
+    const my = t.reviews.find(r => r.r === ME);
+    if (!my) return;
+    const tendCls = t.tend === '推荐' ? 'tend-rec' : 'tend-nrec';
+    const playId = PLAY_IDS[t.play] || '—';
+    const cls = my.v === '通过' ? 'c-pass' : (my.v === '优质' ? 'c-good' : 'c-rej');
+
+    document.getElementById('detail-title').textContent = '我的评审记录';
+    document.getElementById('detail-body').innerHTML = `
+      <div class="detail-head">
+        <img class="detail-cover" src="${t.cover}" alt="">
+        <div>
+          <div class="detail-title">${srcBadge(t.play)}${t.play}<span class="play-id">ID：${playId}<button class="copy-btn" data-copy="${playId}" title="复制 ID">${COPY_SVG}</button></span></div>
+          <div class="detail-meta">鉴赏提交时间 ${t.time}</div>
+          <div class="detail-tags">
+            <span class="tag ${tendCls}" style="font-size:12px;padding:2px 8px;">鉴赏家倾向：${t.tend}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-section">鉴赏正文</div>
+      <div class="detail-text">${t.text}</div>
+      <div class="detail-section">我的评价结论</div>
+      <div class="rv-row">
+        <span class="rv-name">${ME}</span>
+        <span class="rv-result ${cls}">${my.v}</span>
+        <span class="rv-time">${my.time || ''}</span>
+      </div>
+      ${my.reason ? `<div class="rv-reason-full">原因：${my.reason}</div>` : ''}`;
+
+    document.getElementById('modal-detail').classList.remove('hidden');
+  }
+
+  /* ========== 顶栏视图切换 ========== */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('view-reviewer').classList.toggle('hidden', btn.dataset.view !== 'reviewer');
+      document.getElementById('view-admin').classList.toggle('hidden', btn.dataset.view !== 'admin');
+      if (btn.dataset.view === 'admin') renderAdmin();
+    });
+  });
+
+  /* ========== 管理后台渲染 ========== */
+  const adminFilter = {
+    status: null,   // null(全部) | 'pending' | 'reviewing' | 'done'
+    play: '',       // 玩法搜索关键词
+    tend: '',       // '' | '推荐' | '不推荐'
+    dateFrom: '',   // 'YYYY-MM-DD'
+    dateTo: '',
+  };
+
+  function taskStatus(t) {
+    if (t.reviews.length >= 3) return 'done';
+    if (t.assigned.length > 0) return 'reviewing';
+    return 'pending';
+  }
+
+  function renderAdminStats() {
+    const total = POOL.length;
+    const pending = POOL.filter(t => taskStatus(t) === 'pending').length;
+    const reviewing = POOL.filter(t => taskStatus(t) === 'reviewing').length;
+    const done = POOL.filter(t => taskStatus(t) === 'done').length;
+
+    document.getElementById('ad-total').innerHTML = total + '<span class="unit">个</span>';
+    document.getElementById('ad-pending').innerHTML = pending + '<span class="unit">个</span>';
+    document.getElementById('ad-reviewing').innerHTML = reviewing + '<span class="unit">个</span>';
+    document.getElementById('ad-done').innerHTML = done + '<span class="unit">个</span>';
+  }
+
+  function renderAdminList() {
+    const kw = adminFilter.play.trim();
+    const filtered = POOL.filter(t => {
+      if (adminFilter.status && adminFilter.status !== 'all' && taskStatus(t) !== adminFilter.status) return false;
+      if (kw && !((PLAY_IDS[t.play] || '').toLowerCase().includes(kw.toLowerCase()))) return false;
+      if (adminFilter.tend && t.tend !== adminFilter.tend) return false;
+      const date = t.time.slice(0, 10);
+      if (adminFilter.dateFrom && date < adminFilter.dateFrom) return false;
+      if (adminFilter.dateTo && date > adminFilter.dateTo) return false;
+      return true;
+    });
+
+    document.getElementById('list-count').textContent = `共 ${filtered.length} 条`;
+
+    const list = document.getElementById('admin-list');
+    if (filtered.length === 0) {
+      list.innerHTML = '<div class="admin-empty">暂无符合条件的鉴赏内容</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(t => {
+      const tendCls = t.tend === '推荐' ? 'tend-rec' : 'tend-nrec';
+      const isDone = taskStatus(t) === 'done';
+      const isReviewing = taskStatus(t) === 'reviewing';
+      let statusHtml;
+      if (isDone) {
+        statusHtml = '<span class="status-badge s-done">评审完成</span>';
+      } else if (isReviewing) {
+        statusHtml = '<span class="status-badge s-ing">评审中</span>';
+      } else {
+        statusHtml = '<span class="status-badge s-pending">待派发</span>';
+      }
+
+      // 评价结论：只显示彩色结论标签（评审中/完成都显示已有结论），0 票显示 —
+      let votes;
+      if (t.reviews.length === 0) {
+        votes = '<span class="vote-empty">—</span>';
+      } else {
+        const pass = t.reviews.filter(r => r.v === '通过').length;
+        const good = t.reviews.filter(r => r.v === '优质').length;
+        const rej = t.reviews.filter(r => r.v === '不通过').length;
+        const tags = [];
+        if (pass > 0) tags.push(`<span class="summ-tag st-pass">通过 ${pass}</span>`);
+        if (good > 0) tags.push(`<span class="summ-tag st-good">优质 ${good}</span>`);
+        if (rej > 0) tags.push(`<span class="summ-tag st-rej">不通过 ${rej}</span>`);
+        votes = tags.join('') || '<span class="vote-empty">—</span>';
+      }
+
+      // 正文摘要（一行截断，让内容可辨识）
+      const summ = t.text.length > 52 ? t.text.slice(0, 52) + '…' : t.text;
+      const playId = PLAY_IDS[t.play] || '—';
+      // 审核结束时间：评审完成 = 最后一票提交时间，其余显示 -
+      const endTime = isDone && t.reviews.length ? t.reviews[t.reviews.length - 1].time : '-';
+
+      return `<div class="admin-row" data-id="${t.id}">
+        <span class="c-play">
+          <img class="thumb" src="${t.cover}" alt="">
+          <span class="c-play-info">
+            <span class="c-play-name">${srcBadge(t.play)}${t.play}</span>
+            <span class="content-summ">${summ}</span>
+          </span>
+        </span>
+        <span class="cell-id">${playId}</span>
+        <span><span class="tag ${tendCls}" style="font-size:12px;padding:2px 8px;">${t.tend}</span></span>
+        <span class="cell-time">${t.time}</span>
+        <span class="cell-et">${endTime}</span>
+        <span>${statusHtml}</span>
+        <span class="c-vote">${votes}</span>
+        <span class="c-op"><button class="btn-detail" data-id="${t.id}">查看详情</button></span>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAdmin() {
+    renderAdminStats();
+    renderAdminList();
+    // 统计卡选中态
+    document.querySelectorAll('.stat-card.filterable').forEach(c => {
+      c.classList.toggle('active', c.dataset.filter === (adminFilter.status || 'all'));
+    });
+  }
+
+  /* ========== 筛选交互 ========== */
+  document.querySelectorAll('.stat-card.filterable').forEach(card => {
+    card.addEventListener('click', () => {
+      // 单选切换：点击已选中的卡保持选中（不取消），点「内容池数量」回到全部
+      adminFilter.status = card.dataset.filter;
+      renderAdmin();
+    });
+  });
+  const fPlay = document.getElementById('f-play');
+  fPlay.addEventListener('input', () => { adminFilter.play = fPlay.value; renderAdminList(); });
+  document.getElementById('f-tend').addEventListener('change', e => { adminFilter.tend = e.target.value; renderAdminList(); });
+  document.getElementById('f-from').addEventListener('change', e => { adminFilter.dateFrom = e.target.value; renderAdminList(); });
+  document.getElementById('f-to').addEventListener('change', e => { adminFilter.dateTo = e.target.value; renderAdminList(); });
+  document.getElementById('f-clear').addEventListener('click', () => {
+    adminFilter.status = null;
+    adminFilter.play = '';
+    adminFilter.tend = '';
+    adminFilter.dateFrom = '';
+    adminFilter.dateTo = '';
+    fPlay.value = '';
+    document.getElementById('f-tend').value = '';
+    document.getElementById('f-from').value = '';
+    document.getElementById('f-to').value = '';
+    renderAdmin();
+  });
+
+  /* 列表「查看详情」按钮 → 详情弹窗 */
+  document.getElementById('admin-list').addEventListener('click', e => {
+    const btn = e.target.closest('.btn-detail');
+    if (!btn) return;
+    openDetail(+btn.dataset.id);
+  });
+
+  /* 复制 ID 按钮（全局委托） */
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const val = btn.dataset.copy || '';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(val).then(() => toast(`已复制：${val}`));
+    } else {
+      toast(`已复制：${val}`);
+    }
+  });
+
+  /* ========== Toast ========== */
+  let toastTimer = null;
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+
+  /* ========== 初始化 ========== */
+  renderIdle();
+</script>
+</body>
+</html>
